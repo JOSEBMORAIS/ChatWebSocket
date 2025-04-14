@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat WebSocket</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Chat em tempo real</h2>
+
+  <div>
+    <label for="nome">Seu nome:</label>
+    <input type="text" id="nome" placeholder="Digite seu nome" />
+    <button onclick="entrar()">Entrar</button>
+  </div>
+
+  <div id="chat" style="display:none;">
+    <div id="mensagens"></div>
+
+    <div id="mensagem-box">
+      <input type="text" id="mensagem" placeholder="Digite sua mensagem" />
+      <button onclick="enviar()">Enviar</button>
+    </div>
+
+    <h4>Usuários online:</h4>
+    <ul id="usuarios-online"></ul>
+  </div>
+
+  <script>
+    let ws;
+    let nome;
+
+    function entrar() {
+      nome = document.getElementById('nome').value.trim();
+      if (!nome) {
+        alert("Digite seu nome antes de entrar no chat.");
+        return;
+      }
+
+      ws = new WebSocket('ws://' + location.host);
+
+      ws.onopen = () => {
+        ws.send(JSON.stringify({ nome }));
+        document.getElementById('chat').style.display = 'block';
+      };
+
+      ws.onmessage = async function(event) {
+        let texto;
+        if (event.data instanceof Blob) {
+          texto = await event.data.text();
+        } else {
+          texto = event.data;
+        }
+
+        let data;
+        try {
+          data = JSON.parse(texto);
+        } catch (e) {
+          console.error("Erro ao processar mensagem", e);
+          return;
+        }
+
+        if (data.tipo === 'mensagem') {
+          const div = document.createElement('div');
+          const remetente = data.texto.split(':')[0];
+          const ehEu = remetente === nome;
+          div.textContent = data.texto;
+          div.className = `msg ${ehEu ? 'eu' : 'outro'}`;
+
+          const mensagens = document.getElementById('mensagens');
+          mensagens.appendChild(div);
+          mensagens.scrollTop = mensagens.scrollHeight;
+        }
+
+        if (data.tipo === 'usuarios') {
+          const lista = document.getElementById('usuarios-online');
+          lista.innerHTML = '';
+          data.nomes.forEach(nome => {
+            const li = document.createElement('li');
+            li.textContent = nome;
+            lista.appendChild(li);
+          });
+        }
+      };
+    }
+
+    function enviar() {
+      const input = document.getElementById('mensagem');
+      const mensagem = input.value;
+      if (mensagem.trim() === '') return;
+
+      ws.send(JSON.stringify({ nome, mensagem }));
+      input.value = '';
+    }
+  </script>
+</body>
+</html>

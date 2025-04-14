@@ -1,0 +1,92 @@
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+h2, h4 {
+  color: #333;
+}
+
+#chat {
+  width: 100%;
+  max-width: 600px;
+}
+
+#mensagens {
+  background: white;
+  border: 1px solid #ccc;
+  height: 300px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+}
+
+.msg {
+  margin: 5px 0;
+  padding: 8px 12px;
+  border-radius: 16px;
+  display: inline-block;
+  max-width: 80%;
+  word-wrap: break-word;
+}
+
+.msg.eu {
+  background-color: #DCF8C6;
+  align-self: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+
+.msg.outro {
+  background-color: #eee;
+  align-self: flex-start;
+  text-align: left;
+  margin-right: auto;
+}
+
+input[type="text"] {
+  padding: 10px;
+  width: calc(100% - 100px);
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  margin-right: 5px;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+#mensagem-box {
+  display: flex;
+  gap: 5px;
+}
+
+#usuarios-online {
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  max-height: 100px;
+  overflow-y: auto;
+  list-style: none;
+  margin-top: 10px;
+}
+
+#usuarios-online li {
+  padding: 2px 0;
+}
