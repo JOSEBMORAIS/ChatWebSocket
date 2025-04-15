@@ -62,6 +62,6 @@ wss.on('connection', function connection(ws) {
 });
 
 server.listen(process.env.PORT || port, () => {
-  console.log('Servidor rodando naaa porta', process.env.PORT || ${port}');
+  console.log('Example app listening on port ${port}');
 });
 
