@@ -36,12 +36,28 @@ wss.on('connection', function connection(ws) {
 
       if (!usuarios.has(ws)) {
         usuarios.set(ws, data.nome);
+        
         atualizarListaUsuarios();
+
+        // Envia mensagem de boas-vindas
+        ws.send(JSON.stringify({
+            tipo: 'sistema',
+            texto: `Bem-vindo(a), ${data.nome}! 🎉`
+        }));
+
+        // Notifica os outros que ele entrou
+        broadcast(JSON.stringify({
+            tipo: 'sistema',
+            texto: `${data.nome} entrou no chat`
+        }));
+
+        
         return;
       }
 
+      const hora = new Date().toLocaleTimeString('pt-BR', {hour: '2-digit',minute: '2-digit'});
       const textoFinal = `${data.nome}: ${data.mensagem}`;
-      const payload = JSON.stringify({ tipo: 'mensagem', texto: textoFinal });
+      const payload = JSON.stringify({ tipo: 'mensagem', texto: hora + ": " +  textoFinal });
 
       wss.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
@@ -55,13 +71,15 @@ wss.on('connection', function connection(ws) {
 
   ws.on('close', () => {
     usuarios.delete(ws);
+
     atualizarListaUsuarios();
+   
   });
 
-  ws.send(JSON.stringify({ tipo: 'mensagem', texto: 'Bem-vindo ao chat!' }));
+  ws.send(JSON.stringify({ tipo: 'mensagem', texto: 'Bem-vindo ao chat!!' }));
 });
 
 server.listen(process.env.PORT || port, () => {
-  console.log('Example app listening on port ${port}');
+  console.log('chat app listening on port ${port}');
 });
 

@@ -90,3 +90,10 @@ button:hover {
 #usuarios-online li {
   padding: 2px 0;
 }
+
+.sistema {
+  text-align: center;
+  font-style: italic;
+  color: #888;
+}
+

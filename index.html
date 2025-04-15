@@ -1,100 +1,109 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-  <title>Chat WebSocket</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h2>Chat em tempo real</h2>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8" />
+    <title>Chat WebSocket</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <h2>Chat em tempo real</h2>
 
-  <div>
-    <label for="nome">Seu nome:</label>
-    <input type="text" id="nome" placeholder="Digite seu nome" />
-    <button onclick="entrar()">Entrar</button>
-  </div>
-
-  <div id="chat" style="display:none;">
-    <div id="mensagens"></div>
-
-    <div id="mensagem-box">
-      <input type="text" id="mensagem" placeholder="Digite sua mensagem" />
-      <button onclick="enviar()">Enviar</button>
+    <div>
+      <label for="nome">Seu nome:</label>
+      <input type="text" id="nome" placeholder="Digite seu nome" />
+      <button onclick="entrar()">Entrar</button>
     </div>
 
-    <h4>Usuários online:</h4>
-    <ul id="usuarios-online"></ul>
-  </div>
+    <div id="chat" style="display: none">
+      <div id="mensagens"></div>
 
-  <script>
-    let ws;
-    let nome;
+      <div id="mensagem-box">
+        <input type="text" id="mensagem" placeholder="Digite sua mensagem" />
+        <button onclick="enviar()">Enviar</button>
+      </div>
 
-    function entrar() {
-      nome = document.getElementById('nome').value.trim();
-      if (!nome) {
-        alert("Digite seu nome antes de entrar no chat.");
-        return;
-      }
+      <h4>Usuários online:</h4>
+      <ul id="usuarios-online"></ul>
+    </div>
 
-     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-     ws = new WebSocket(`${protocol}://${window.location.host}`);
+    <script>
+      let ws;
+      let nome;
 
-      ws.onopen = () => {
-        ws.send(JSON.stringify({ nome }));
-        document.getElementById('chat').style.display = 'block';
-      };
-
-      ws.onmessage = async function(event) {
-        let texto;
-        if (event.data instanceof Blob) {
-          texto = await event.data.text();
-        } else {
-          texto = event.data;
-        }
-
-        let data;
-        try {
-          data = JSON.parse(texto);
-        } catch (e) {
-          console.error("Erro ao processar mensagem", e);
+      function entrar() {
+        nome = document.getElementById("nome").value.trim();
+        if (!nome) {
+          alert("Digite seu nome antes de entrar no chat.");
           return;
         }
 
-        if (data.tipo === 'mensagem') {
-          const div = document.createElement('div');
-          const remetente = data.texto.split(':')[0];
-          const ehEu = remetente === nome;
-          div.textContent = data.texto;
-          div.className = `msg ${ehEu ? 'eu' : 'outro'}`;
+        const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        ws = new WebSocket(`${protocol}://${window.location.host}`);
 
-          const mensagens = document.getElementById('mensagens');
-          mensagens.appendChild(div);
-          mensagens.scrollTop = mensagens.scrollHeight;
-        }
+        ws.onopen = () => {
+          ws.send(JSON.stringify({ nome }));
+          document.getElementById("chat").style.display = "block";
+        };
 
-        if (data.tipo === 'usuarios') {
-          const lista = document.getElementById('usuarios-online');
-          lista.innerHTML = '';
-          data.nomes.forEach(nome => {
-            const li = document.createElement('li');
-            li.textContent = nome;
-            lista.appendChild(li);
-          });
-        }
-      };
-    }
+        ws.onmessage = async function (event) {
+          let texto;
+          if (event.data instanceof Blob) {
+            texto = await event.data.text();
+          } else {
+            texto = event.data;
+          }
 
-    function enviar() {
-      const input = document.getElementById('mensagem');
-      const mensagem = input.value;
-      if (mensagem.trim() === '') return;
+          let data;
+          try {
+            data = JSON.parse(texto);
+          } catch (e) {
+            console.error("Erro ao processar mensagem", e);
+            return;
+          }
 
-      ws.send(JSON.stringify({ nome, mensagem }));
-      input.value = '';
-    }
-  </script>
-</body>
+          if (data.tipo === "mensagem") {
+            const div = document.createElement("div");
+            const remetente = data.texto.split(":")[0];
+            const ehEu = remetente === nome;
+            div.textContent = data.texto;
+            div.className = `msg ${ehEu ? "eu" : "outro"}`;
+
+            const mensagens = document.getElementById("mensagens");
+            mensagens.appendChild(div);
+            mensagens.scrollTop = mensagens.scrollHeight;
+          }
+
+          if (data.tipo === "sistema") {
+            const div = document.createElement("div");
+            div.textContent = data.texto;
+            div.className = "msg sistema";
+
+            const mensagens = document.getElementById("mensagens");
+            mensagens.appendChild(div);
+            mensagens.scrollTop = mensagens.scrollHeight;
+          }
+
+          if (data.tipo === "usuarios") {
+            const lista = document.getElementById("usuarios-online");
+            lista.innerHTML = "";
+            data.nomes.forEach((nome) => {
+              const li = document.createElement("li");
+              li.textContent = nome;
+              lista.appendChild(li);
+            });
+          }
+        };
+      }
+
+      function enviar() {
+        const input = document.getElementById("mensagem");
+        const mensagem = input.value;
+        if (mensagem.trim() === "") return;
+
+        ws.send(JSON.stringify({ nome, mensagem }));
+        input.value = "";
+      }
+    </script>
+  </body>
 </html>
