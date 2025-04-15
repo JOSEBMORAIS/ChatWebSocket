@@ -38,7 +38,8 @@
         return;
       }
 
-      ws = new WebSocket('ws://' + location.host);
+     const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+     ws = new WebSocket(`${protocol}://${window.location.host}`);
 
       ws.onopen = () => {
         ws.send(JSON.stringify({ nome }));
