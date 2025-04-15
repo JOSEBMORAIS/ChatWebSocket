@@ -3,6 +3,7 @@ const WebSocket = require('ws');
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const port = process.env.PORT || 10000;
 
 const server = http.createServer((req, res) => {
   const file = req.url === '/style.css' ? 'style.css' : 'index.html';
@@ -60,7 +61,7 @@ wss.on('connection', function connection(ws) {
   ws.send(JSON.stringify({ tipo: 'mensagem', texto: 'Bem-vindo ao chat!' }));
 });
 
-server.listen(process.env.PORT || 10000, () => {
-  console.log('Servidor rodando naaa porta', process.env.PORT || ${port});
+server.listen(process.env.PORT || port, () => {
+  console.log('Servidor rodando naaa porta', process.env.PORT || ${port}');
 });
 
