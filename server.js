@@ -60,7 +60,7 @@ wss.on('connection', function connection(ws) {
   ws.send(JSON.stringify({ tipo: 'mensagem', texto: 'Bem-vindo ao chat!' }));
 });
 
-server.listen(process.env.PORT || port, () => {
-  console.log('Servidor rodando na porta', process.env.PORT || ${port});
+server.listen(process.env.PORT || 10000, () => {
+  console.log('Servidor rodando naaa porta', process.env.PORT || ${port});
 });
 
